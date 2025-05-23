@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class FreelancerScraperService {
@@ -53,6 +55,42 @@ public class FreelancerScraperService {
         else{
             scrapeObject.setRecommendations("Unknown");
         }
+
+        //Specialization
+        Element specialization = doc.select("app-user-profile-summary-description-redesign div").first();
+        if (specialization != null) {
+            scrapeObject.setSpecialisation(specialization.text());
+        }
+        else{
+            scrapeObject.setSpecialisation("Unknown");
+        }
+
+        //Earning Score
+        Element earningScore = doc.select("div.EarningsContainer p").first();
+        if (earningScore != null) {
+            scrapeObject.setEarning(earningScore.text());
+        }
+        else{
+            scrapeObject.setEarning("Unknown");
+        }
+
+        //skills
+        Elements specialisations = doc.select("fl-review-card fl-tag");
+        Set<String> specialisationSet = new HashSet<>();
+        for (Element speElement : specialisations) {
+            String title = speElement.text();
+            specialisationSet.add(title);
+        }
+        scrapeObject.setSkills(specialisationSet);
+
+        //portfolio
+        Elements portfolioItems = doc.select("app-portfolio-item-card-redesign fl-carousel-item fl-text");
+        Set<String> portfolioSet = new HashSet<>();
+        for (Element speElement : portfolioItems) {
+            String title = speElement.text();
+            portfolioSet.add(title);
+        }
+        scrapeObject.setPortfolio(portfolioSet);
 
 
         return scrapeObject;
